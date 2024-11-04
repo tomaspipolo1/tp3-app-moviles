@@ -12,6 +12,7 @@ import HabitListScreen from './(tabs)/HabitListScreen';
 import AddHabitScreen from './(tabs)/AddHabitScreen';
 import ProfileScreen from './(tabs)/ProfileScreen';
 import LoginScreen from './login';
+import WelcomeScreen from './index';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -33,9 +34,9 @@ export default function RootLayoutNav() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack.Navigator>
         {/* Configuracion de la pantalla de inicio de sesion */}
-        <Stack.Screen name="index" options={{ headerShown: false }} component={LoginScreen} />
+        <Stack.Screen name="index" options={{ headerShown: false }} component={WelcomeScreen} />
 
-        <Stack.Screen
+        {<Stack.Screen
           name="login"
           component={LoginScreen}
           options={{
@@ -50,7 +51,7 @@ export default function RootLayoutNav() {
               </TouchableOpacity>
             ),
           }}
-        />
+        />}
 
         <Stack.Screen name="(tabs)" component={TabsScreen} options={{ headerShown: false }} />
       </Stack.Navigator>

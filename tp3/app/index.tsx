@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#f8f9fa', // Fondo claro para darle un aspecto limpio
+    backgroundColor: '#f8f9fa',
   },
   welcomeText: {
     fontSize: 40,

@@ -106,7 +106,9 @@ const LoginScreen = () => {
           <ActivityIndicator size="large" color="#fff" />
         </View>
       )}
-      <Text style={styles.title}>{type === 'login' ? '¡Bienvenido de nuevo!' : 'Crea tu cuenta'}</Text>
+      <Text style={styles.title}>
+        {type === 'login' ? '¡Bienvenido de nuevo!' : 'Crea tu cuenta'}
+      </Text>
       {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
       <View style={{ marginBottom: 20 }}>
         <TextInput placeholder="Email" style={styles.inputField} value={email} onChangeText={setEmail} />
