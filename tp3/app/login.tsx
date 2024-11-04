@@ -1,15 +1,11 @@
-import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ActivityIndicator, Image, TextInput, TouchableOpacity, Alert } from 'react-native'
-import React, { useState, useEffect } from 'react'
-import { useLocalSearchParams } from 'expo-router'
-import { defaultStyles } from '../constants/Styles'
-import { FIREBASE_AUTH } from '../config/firebase-config'
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ActivityIndicator, TextInput, TouchableOpacity } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+import { FIREBASE_AUTH } from '../config/firebase-config';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { router } from 'expo-router';
 
-
-const Page = () => {
-  
-  //const { type } = useLocalSearchParams<{type: string}>();
+const LoginScreen = () => {
   const params = useLocalSearchParams<{ type: string }>();
   const [type, setType] = useState('login');
   useEffect(() => {
@@ -18,20 +14,17 @@ const Page = () => {
     }
   }, [params.type]);
 
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const auth = FIREBASE_AUTH;
-  
-  //Validaciones
 
   const validateInputs = () => {
     if (!email) {
       setErrorMessage('Por favor, ingrese su correo electrónico.');
       return false;
     }
-    // Expresión regular para validar el formato del correo electrónico
     const emailRegex = /\S+@\S+\.\S+/;
     if (!emailRegex.test(email)) {
       setErrorMessage('Por favor, ingrese un correo electrónico válido.');
@@ -49,8 +42,6 @@ const Page = () => {
     return true;
   };
 
-  //Funciones
-
   const signIn = async () => {
     if (!validateInputs()) return;
 
@@ -63,17 +54,17 @@ const Page = () => {
       let message = '';
       switch (error.code) {
         case 'auth/user-not-found':
-          message = 'No se encontro un usuario con ese correo electronico.';
+          message = 'No se encontró un usuario con ese correo electrónico.';
           break;
         case 'auth/wrong-password':
-        case 'auth/invalid-credential': 
+        case 'auth/invalid-credential':
           message = 'Contraseña incorrecta.';
           break;
         case 'auth/invalid-email':
-          message = 'El correo electronico no es valido.';
+          message = 'El correo electrónico no es válido.';
           break;
         default:
-          message = 'Error al iniciar sesion: ' + error.message;
+          message = 'Error al iniciar sesión: ' + error.message;
       }
       setErrorMessage(message);
     }
@@ -92,13 +83,13 @@ const Page = () => {
       let message = '';
       switch (error.code) {
         case 'auth/email-already-in-use':
-          message = 'El correo electronico ya esta en uso.';
+          message = 'El correo electrónico ya está en uso.';
           break;
         case 'auth/invalid-email':
-          message = 'El correo electronico no es valido.';
+          message = 'El correo electrónico no es válido.';
           break;
         case 'auth/weak-password':
-          message = 'La contraseña es demasiado debil.';
+          message = 'La contraseña es demasiado débil.';
           break;
         default:
           message = 'Error al crear la cuenta: ' + error.message;
@@ -109,51 +100,24 @@ const Page = () => {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
-      style={styles.container}
-      keyboardVerticalOffset={1}
-    >
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
       {loading && (
-        <View style={defaultStyles.loadingOverlay}>
+        <View style={styles.loadingOverlay}>
           <ActivityIndicator size="large" color="#fff" />
         </View>
       )}
-      {/* <Image style={styles.logo} source={require('../assets/images/logo-white.png')} /> */}
-
-      <Text style={styles.title}>
-        {type === 'login' ? '¡Bienvenido de nuevo!' : 'Crea tu cuenta'}
-      </Text>
-
-      {/* Mostrar mensaje de error si existe */}
-      {errorMessage ? (
-        <Text style={styles.errorText}>{errorMessage}</Text>
-      ) : null}
-
+      <Text style={styles.title}>{type === 'login' ? '¡Bienvenido de nuevo!' : 'Crea tu cuenta'}</Text>
+      {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
       <View style={{ marginBottom: 20 }}>
-        <TextInput
-          autoCapitalize="none"
-          placeholder="Email"
-          style={styles.inputField}
-          value={email}
-          onChangeText={setEmail}
-        />
-        <TextInput
-          autoCapitalize="none"
-          placeholder="Password"
-          style={styles.inputField}
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
+        <TextInput placeholder="Email" style={styles.inputField} value={email} onChangeText={setEmail} />
+        <TextInput placeholder="Password" style={styles.inputField} value={password} onChangeText={setPassword} secureTextEntry />
       </View>
-
       {type === 'login' ? (
-        <TouchableOpacity onPress={signIn} style={[defaultStyles.btn, styles.btnPrimary]}>
+        <TouchableOpacity onPress={signIn} style={styles.btnPrimary}>
           <Text style={styles.btnPrimaryText}>Inicia Sesión</Text>
         </TouchableOpacity>
       ) : (
-        <TouchableOpacity onPress={signUp} style={[defaultStyles.btn, styles.btnPrimary]}>
+        <TouchableOpacity onPress={signUp} style={styles.btnPrimary}>
           <Text style={styles.btnPrimaryText}>Crea tu cuenta</Text>
         </TouchableOpacity>
       )}
@@ -166,16 +130,11 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
-  logo: {
-    width: 60,
-    height: 60,
-    alignSelf: 'center',
-    marginVertical: 80,
-  },
   title: {
     fontSize: 30,
     alignSelf: 'center',
     fontWeight: 'bold',
+    marginBottom: 20,
   },
   inputField: {
     marginVertical: 4,
@@ -188,7 +147,9 @@ const styles = StyleSheet.create({
   },
   btnPrimary: {
     backgroundColor: '#007bff',
-    marginVertical: 4,
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: 'center',
   },
   btnPrimaryText: {
     color: '#fff',
@@ -199,6 +160,12 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginBottom: 10,
   },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
-export default Page;
+export default LoginScreen;

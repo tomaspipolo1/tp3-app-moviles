@@ -1,76 +1,59 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack, router } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
-
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
+import { ThemeProvider } from '@react-navigation/native';
+import { DarkTheme, DefaultTheme } from '@react-navigation/native';
 import { useColorScheme } from '@/components/useColorScheme';
 import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
+// Importa tus pantallas
+import HabitListScreen from './(tabs)/HabitListScreen';
+import AddHabitScreen from './(tabs)/AddHabitScreen';
+import ProfileScreen from './(tabs)/ProfileScreen';
+import LoginScreen from './login';
 
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '/(tabs)',
-};
+const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
-
-export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-    ...FontAwesome.font,
-  });
-
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
-  useEffect(() => {
-    if (error) throw error;
-  }, [error]);
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
-  return <RootLayoutNav />;
+function TabsScreen() {
+  return (
+    <Tab.Navigator>
+      <Tab.Screen name="Mis Hábitos" component={HabitListScreen} />
+      <Tab.Screen name="Agregar Hábito" component={AddHabitScreen} />
+      <Tab.Screen name="Perfil" component={ProfileScreen} />
+    </Tab.Navigator>
+  );
 }
 
-function RootLayoutNav() {
+export default function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Navigator>
+        {/* Configuracion de la pantalla de inicio de sesion */}
+        <Stack.Screen name="index" options={{ headerShown: false }} component={LoginScreen} />
+
         <Stack.Screen
-        name="login"
-        options={{
-          presentation: 'modal',
-          title: '',
-          headerTitleStyle: {
-            fontFamily: 'mon-sb',
-          },
-          headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
-              <Ionicons name="close-outline" size={28} />
-            </TouchableOpacity>
-          ),
-        }}
-      />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      </Stack>
+          name="login"
+          component={LoginScreen}
+          options={{
+            presentation: 'modal',
+            title: '',
+            headerTitleStyle: {
+              fontFamily: 'mon-sb',
+            },
+            headerLeft: () => (
+              <TouchableOpacity onPress={() => router.back()}>
+                <Ionicons name="close-outline" size={28} />
+              </TouchableOpacity>
+            ),
+          }}
+        />
+
+        <Stack.Screen name="(tabs)" component={TabsScreen} options={{ headerShown: false }} />
+      </Stack.Navigator>
     </ThemeProvider>
   );
 }
