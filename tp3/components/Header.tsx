@@ -40,6 +40,9 @@ export default function Header({ showBackButton = false, title }: HeaderProps) {
 const styles = StyleSheet.create({
   safeArea: {
     backgroundColor: ColorPalette.header,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 10,
   },
   container: {

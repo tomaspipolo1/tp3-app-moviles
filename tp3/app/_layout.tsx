@@ -17,15 +17,44 @@ import WelcomeScreen from './index';
 // Importo componentes
 import Header from '@/components/Header';
 
+// Importo Constantes
+import { ColorPalette } from '@/constants/Colors';
+
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function TabsScreen() {
   return (
-    <Tab.Navigator>
-      <Tab.Screen name="Mis Hábitos" component={HabitListScreen} />
-      <Tab.Screen name="Agregar Hábito" component={AddHabitScreen} />
-      <Tab.Screen name="Perfil" component={ProfileScreen} />
+    <Tab.Navigator
+    screenOptions={{
+      tabBarActiveTintColor: ColorPalette.btnPrimary, 
+      tabBarInactiveTintColor: ColorPalette.dark, 
+    }}
+    >
+      <Tab.Screen
+        name="Mis Hábitos"
+        component={HabitListScreen}
+        options={{ 
+          headerShown: false, 
+          tabBarIcon: ({ color }) => <Ionicons name="fitness" size={28} color={color} />,
+        }} 
+      />
+      <Tab.Screen
+        name="Agregar Hábito"
+        component={AddHabitScreen}
+        options={{ 
+          headerShown: false, 
+          tabBarIcon: ({ color }) => <Ionicons name="add-circle" size={28} color={color} />,
+        }} 
+      />
+      <Tab.Screen
+        name="Perfil"
+        component={ProfileScreen}
+        options={{ 
+          headerShown: false, 
+          tabBarIcon: ({ color }) => <Ionicons name="person" size={28} color={color} />,
+        }}  
+      />
     </Tab.Navigator>
   );
 }
@@ -36,10 +65,10 @@ export default function RootLayoutNav() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack.Navigator>
-        {/* Configuracion de la pantalla de inicio de sesion */}
+        {/* Configuración de la pantalla de inicio de sesión */}
         <Stack.Screen name="index" options={{ headerShown: false }} component={WelcomeScreen} />
 
-        {<Stack.Screen
+        <Stack.Screen
           name="login"
           component={LoginScreen}
           options={{
@@ -54,15 +83,16 @@ export default function RootLayoutNav() {
               </TouchableOpacity>
             ),
           }}
-        />}
+        />
 
-        <Stack.Screen 
-          name="(tabs)" 
-          component={TabsScreen} 
-          options={{ 
+        <Stack.Screen
+          name="(tabs)"
+          component={TabsScreen}
+          options={{
             headerShown: true,
-            header: () => <Header/>,
-           }} />
+            header: () => <Header />,  
+          }}
+        />
       </Stack.Navigator>
     </ThemeProvider>
   );
