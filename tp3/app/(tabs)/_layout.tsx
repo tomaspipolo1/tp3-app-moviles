@@ -1,69 +1,44 @@
 import React from 'react';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs } from 'expo-router';
-import { Pressable, Text } from 'react-native';
-
-import {Colors} from '@/constants/Colors';
-import { useColorScheme } from '@/components/useColorScheme';
-import { useClientOnlyValue } from '@/components/useClientOnlyValue';
-import { getAuth } from 'firebase/auth';
-import { router } from 'expo-router';
-
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
-  color: string;
-}) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
-}
+import { Tabs } from 'expo-router';
+import {ColorPalette} from '@/constants/Colors';
+// import { useColorScheme } from '@/hooks/useColorScheme';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-  const [isLoading, setIsLoading] = React.useState(true);
-
-  getAuth().onAuthStateChanged((user) => {
-    setIsLoading(false);
-    if (!user) {
-      router.replace("/");
-    }
-  });
-
-  if (isLoading) return <Text style={{ paddingTop: 30 }}>Loading...</Text>;
+  // const colorScheme = useColorScheme();
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
-        headerShown: useClientOnlyValue(false, true),
+        headerShown: false,
+        // tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: ColorPalette.btnPrimary, 
+        tabBarInactiveTintColor: ColorPalette.dark, 
       }}>
       <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? 'light'].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
-          ),
-        }}
+        name="(list)"
+        options={{ 
+          headerShown: false,
+          title: 'Mis Hábitos',
+          tabBarIcon: ({ color }) => <Ionicons name="fitness" size={28} color={color} />,
+        }} 
       />
       <Tabs.Screen
-        name="two"
-        options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-        }}
+        name="(add)"
+        options={{ 
+          headerShown: false, 
+          title: 'Agregar Hábito',
+          tabBarIcon: ({ color }) => <Ionicons name="add-circle" size={28} color={color} />,
+        }} 
+      />
+      <Tabs.Screen
+        name="(profile)"
+
+        options={{ 
+          headerShown: false,
+          title: 'Perfil',
+          tabBarIcon: ({ color }) => <Ionicons name="person" size={28} color={color} />,
+        }}  
       />
     </Tabs>
   );

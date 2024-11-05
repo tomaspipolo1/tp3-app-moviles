@@ -1,4 +1,3 @@
-// SkeletonItem.tsx
 import React from 'react';
 import { ViewStyle, StyleSheet, DimensionValue } from 'react-native';
 import { MotiView } from 'moti';

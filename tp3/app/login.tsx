@@ -1,27 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ActivityIndicator, TextInput, TouchableOpacity } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
-import { FIREBASE_AUTH } from '../config/firebase-config';
+import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ActivityIndicator, Image, TextInput, TouchableOpacity, Alert } from 'react-native'
+import React, { useState } from 'react'
+import { useLocalSearchParams } from 'expo-router'
+import { defaultStyles } from '../constants/Styles'
+import { FIREBASE_AUTH } from '../config/firebase-config'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { router } from 'expo-router';
-import { ColorPalette } from '@/constants/Colors';
+import { useAddUser } from '@/hooks/useAddUser'
+import { useAuth } from '@/context/auth'
 
-const LoginScreen = () => {
-  const params = useLocalSearchParams<{ type: string }>();
-  const [type, setType] = useState('login');
-  useEffect(() => {
-    if (params.type && params.type !== type) {
-      setType(params.type);
-    }
-  }, [params.type]);
-
-  const [loading, setLoading] = useState(false);
+const Page = () => {
+  const { type } = useLocalSearchParams<{type: string}>();
+  const [loading, setLoading] = useState(false); 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [repeatPassword, setRepeatPassword] = useState('');
+  const [name, setName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [age, setAge] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const auth = FIREBASE_AUTH;
+  const { signIn, signUp } = useAuth()
+
 
   const validateInputs = () => {
+    if (!name && type === 'register') {
+      setErrorMessage('Por favor, ingrese su nombre.');
+      return false;
+    }
+    if (!lastName && type === 'register') {
+      setErrorMessage('Por favor, ingrese su apellido.');
+      return false;
+    }
+
     if (!email) {
       setErrorMessage('Por favor, ingrese su correo electrónico.');
       return false;
@@ -39,19 +49,22 @@ const LoginScreen = () => {
       setErrorMessage('La contraseña debe tener al menos 6 caracteres.');
       return false;
     }
+    if (type === 'register' && password !== repeatPassword) {
+      setErrorMessage('Las contraseñas no coinciden.');
+      return false;
+    }
     setErrorMessage('');
     return true;
   };
 
-  const signIn = async () => {
+  const _signIn = async () => {
     if (!validateInputs()) return;
-
-    setLoading(true);
+    setLoading(true)
     try {
-      const user = await signInWithEmailAndPassword(auth, email, password);
-      if (user) router.replace('/(tabs)');
+      await signIn({email, password})
+      // router.replace('/(tabs)/(list)')
     } catch (error: any) {
-      console.log(error);
+      console.log(error)
       let message = '';
       switch (error.code) {
         case 'auth/user-not-found':
@@ -69,16 +82,15 @@ const LoginScreen = () => {
       }
       setErrorMessage(message);
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
-  const signUp = async () => {
+  const _signUp = async () => {
     if (!validateInputs()) return;
-
-    setLoading(true);
+    setLoading(true)
     try {
-      const user = await createUserWithEmailAndPassword(auth, email, password);
-      if (user) router.replace('/(tabs)');
+      await signUp({email, password, name, lastName, age})
+      router.replace('/(tabs)');
     } catch (error: any) {
       console.log(error);
       let message = '';
@@ -97,47 +109,71 @@ const LoginScreen = () => {
       }
       setErrorMessage(message);
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+      keyboardVerticalOffset={1}
+    >
       {loading && (
-        <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color="#fff" />
+        <View style={defaultStyles.loadingOverlay}>
+          <ActivityIndicator size='large' color='#fff'/>
         </View>
       )}
+      {/* <Image style={styles.logo} source={require('../assets/images/logo-white.png')} /> */}
+
       <Text style={styles.title}>
-        {type === 'login' ? '¡Bienvenido de nuevo!' : 'Crea tu cuenta'}
+        {type === 'login' ? 'Bienvenido de nuevo!' : 'Creá tu cuenta'}
       </Text>
+
       {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
       <View style={{ marginBottom: 20 }}>
+        {type === 'register' && (
+          <>
+            <TextInput placeholder="Nombre" style={styles.inputField} value={name} onChangeText={setName} />
+            <TextInput placeholder="Apellido" style={styles.inputField} value={lastName} onChangeText={setLastName} />
+            <TextInput placeholder="Edad (opcional)" style={styles.inputField} value={age} onChangeText={setAge} keyboardType="numeric" />
+          </>
+        )}
         <TextInput placeholder="Email" style={styles.inputField} value={email} onChangeText={setEmail} />
         <TextInput placeholder="Password" style={styles.inputField} value={password} onChangeText={setPassword} secureTextEntry />
+        {type === 'register' && (
+          <TextInput placeholder="Repetir Contraseña" style={styles.inputField} value={repeatPassword} onChangeText={setRepeatPassword} secureTextEntry />
+        )}
       </View>
+
       {type === 'login' ? (
-        <TouchableOpacity onPress={signIn} style={styles.btnPrimary}>
+        <TouchableOpacity onPress={_signIn} style={[defaultStyles.btn, styles.btnPrimary]}>
           <Text style={styles.btnPrimaryText}>Inicia Sesión</Text>
         </TouchableOpacity>
       ) : (
-        <TouchableOpacity onPress={signUp} style={styles.btnPrimary}>
-          <Text style={styles.btnPrimaryText}>Crea tu cuenta</Text>
+        <TouchableOpacity onPress={_signUp} style={[defaultStyles.btn, styles.btnPrimary]}>
+          <Text style={styles.btnPrimaryText}>Creá tu cuenta</Text>
         </TouchableOpacity>
       )}
+
     </KeyboardAvoidingView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
   },
+  logo: {
+    width: 60,
+    height: 60,
+    alignSelf: 'center',
+    marginVertical: 80,
+  },
   title: {
     fontSize: 30,
     alignSelf: 'center',
     fontWeight: 'bold',
-    marginBottom: 20,
   },
   inputField: {
     marginVertical: 4,
@@ -149,10 +185,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   btnPrimary: {
-    backgroundColor: ColorPalette.btnPrimary,
-    paddingVertical: 15,
-    borderRadius: 10,
-    alignItems: 'center',
+    backgroundColor: "#007bff",
+    marginVertical: 4,
   },
   btnPrimaryText: {
     color: '#fff',
@@ -163,12 +197,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginBottom: 10,
   },
-  loadingOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
+})
 
-export default LoginScreen;
+export default Page;

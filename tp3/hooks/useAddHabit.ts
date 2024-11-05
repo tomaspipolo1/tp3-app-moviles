@@ -5,7 +5,7 @@ import { FIREBASE_DB } from '../config/firebase-config';
 export const useAddHabit = (userId: string) => {
   const [isAdding, setIsAdding] = useState(false);
 
-  const addHabit = async (habit: { name: string; description: string; importance: string }) => {
+  const addHabit = async (habit: { name: string; description: string; importance: string, timeFrom: string, timeTo: string }) => {
     setIsAdding(true);
     try {
       const habitsCollection = collection(FIREBASE_DB, `users/${userId}/habits`);
