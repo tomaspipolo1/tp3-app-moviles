@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     color: ColorPalette.dark,
   },
   btnLogin: {
-    backgroundColor: ColorPalette.ligthBlue,
+    backgroundColor: ColorPalette.btnPrimary,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.2,

@@ -1,8 +1,15 @@
-// AddHabitScreen.js
+
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  StyleSheet,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import CarouselPicker from '../../components/Picker/CarouselPicker';
+import ImportancePickerModal from '../../components/Picker/ImportanceModalPicker';
 
 const AddHabitScreen = () => {
   const navigation = useNavigation();
@@ -12,10 +19,11 @@ const AddHabitScreen = () => {
   const [importance, setImportance] = useState('');
   const [horaInicio, setHoraInicio] = useState('');
   const [horaFin, setHoraFin] = useState('');
+  const [isModalVisible, setModalVisible] = useState(false);
 
   const handleSave = () => {
     if (!name.trim() || !importance.trim()) {
-      Alert.alert("Error", "Los campos Nombre e Importancia son obligatorios.");
+      Alert.alert('Error', 'Los campos Nombre e Importancia son obligatorios.');
       return;
     }
 
@@ -40,6 +48,14 @@ const AddHabitScreen = () => {
     navigation.goBack();
   };
 
+  const openModal = () => {
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Agregar un Hábito</Text>
@@ -61,16 +77,11 @@ const AddHabitScreen = () => {
       />
 
       <Text style={styles.label}>Importancia</Text>
-      <CarouselPicker
-        data={[
-          { label: 'Alto', value: 'Alto' },
-          { label: 'Medio', value: 'Medio' },
-          { label: 'Bajo', value: 'Bajo' },
-        ]}
-        onSelect={setImportance}
-        selectedValue={importance}
-        label="Seleccione una opción"
-      />
+      <TouchableOpacity style={styles.importanceButton} onPress={openModal}>
+        <Text style={styles.importanceButtonText}>
+          {importance || 'Seleccione una opción'}
+        </Text>
+      </TouchableOpacity>
 
       <Text style={styles.label}>Hora de Inicio</Text>
       <TextInput
@@ -96,6 +107,13 @@ const AddHabitScreen = () => {
           <Text style={styles.buttonText}>Guardar</Text>
         </TouchableOpacity>
       </View>
+
+      <ImportancePickerModal
+        visible={isModalVisible}
+        onClose={closeModal}
+        onSelect={(value) => setImportance(value)}
+        selectedValue={importance}
+      />
     </View>
   );
 };
@@ -124,6 +142,19 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#fff',
     marginBottom: 15,
+  },
+  importanceButton: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    marginBottom: 15,
+    height: 50,
+  },
+  importanceButtonText: {
+    color: '#333',
   },
   buttonContainer: {
     flexDirection: 'row',

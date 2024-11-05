@@ -7,12 +7,15 @@ import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 
-// Importa tus pantallas
+// Importo pantallas
 import HabitListScreen from './(tabs)/HabitListScreen';
 import AddHabitScreen from './(tabs)/AddHabitScreen';
 import ProfileScreen from './(tabs)/ProfileScreen';
 import LoginScreen from './login';
 import WelcomeScreen from './index';
+
+// Importo componentes
+import Header from '@/components/Header';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -53,7 +56,13 @@ export default function RootLayoutNav() {
           }}
         />}
 
-        <Stack.Screen name="(tabs)" component={TabsScreen} options={{ headerShown: false }} />
+        <Stack.Screen 
+          name="(tabs)" 
+          component={TabsScreen} 
+          options={{ 
+            headerShown: true,
+            header: () => <Header/>,
+           }} />
       </Stack.Navigator>
     </ThemeProvider>
   );

@@ -4,6 +4,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { FIREBASE_AUTH } from '../config/firebase-config';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { router } from 'expo-router';
+import { ColorPalette } from '@/constants/Colors';
 
 const LoginScreen = () => {
   const params = useLocalSearchParams<{ type: string }>();
@@ -148,7 +149,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   btnPrimary: {
-    backgroundColor: '#007bff',
+    backgroundColor: ColorPalette.btnPrimary,
     paddingVertical: 15,
     borderRadius: 10,
     alignItems: 'center',

@@ -9,7 +9,6 @@ import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 import { getAuth } from 'firebase/auth';
 import { router } from 'expo-router';
 
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>['name'];
   color: string;
