@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import {
   View,
@@ -10,6 +9,8 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import ImportancePickerModal from '../../components/Picker/ImportanceModalPicker';
+import { ColorPalette } from '@/constants/Colors';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const AddHabitScreen = () => {
   const navigation = useNavigation();
@@ -41,10 +42,20 @@ const AddHabitScreen = () => {
     };
 
     console.log('Habit to save:', newHabit);
+    clearForm();
     navigation.goBack();
   };
 
+  const clearForm = () => {
+    setName('');
+    setDescription('');
+    setImportance('');
+    setHoraInicio('');
+    setHoraFin('');
+  };
+
   const handleCancel = () => {
+    clearForm();
     navigation.goBack();
   };
 
@@ -56,56 +67,82 @@ const AddHabitScreen = () => {
     setModalVisible(false);
   };
 
+ // Función para formatear la hora en el formato "xx:xx"
+ const formatTimeInput = (input, setter) => {
+  const formattedInput = input.replace(/[^0-9]/g, '');
+
+  if (formattedInput === '') {
+    setter('');
+    return;
+  }
+
+  if (formattedInput.length <= 4) {
+    const hour = formattedInput.slice(0, 2);
+    const minutes = formattedInput.slice(2, 4);
+    setter(`${hour}:${minutes}`);
+  }
+};
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Agregar un Hábito</Text>
+    <KeyboardAwareScrollView
+      style={styles.container}
+      resetScrollToCoords={{ x: 0, y: 0 }} 
+      scrollEnabled={true} 
+      keyboardShouldPersistTaps="handled" 
+    >
+      <View style={styles.innerContainer}>
+        <Text style={styles.title}>Agregar un Hábito</Text>
 
-      <Text style={styles.label}>Nombre</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Nombre del hábito"
-        value={name}
-        onChangeText={setName}
-      />
+        <Text style={styles.label}>Nombre</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Nombre del hábito"
+          value={name}
+          onChangeText={setName}
+        />
 
-      <Text style={styles.label}>Descripción</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Descripción del hábito"
-        value={description}
-        onChangeText={setDescription}
-      />
+        <Text style={styles.label}>Descripción</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Descripción del hábito"
+          value={description}
+          onChangeText={setDescription}
+        />
 
-      <Text style={styles.label}>Importancia</Text>
-      <TouchableOpacity style={styles.importanceButton} onPress={openModal}>
-        <Text style={styles.importanceButtonText}>
-          {importance || 'Seleccione una opción'}
-        </Text>
-      </TouchableOpacity>
-
-      <Text style={styles.label}>Hora de Inicio</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Ej. 08:00"
-        value={horaInicio}
-        onChangeText={setHoraInicio}
-      />
-
-      <Text style={styles.label}>Hora de Fin</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Ej. 18:00"
-        value={horaFin}
-        onChangeText={setHoraFin}
-      />
-
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={handleCancel}>
-          <Text style={styles.buttonText}>Cancelar</Text>
+        <Text style={styles.label}>Importancia</Text>
+        <TouchableOpacity style={styles.importanceButton} onPress={openModal}>
+          <Text style={styles.importanceButtonText}>
+            {importance || 'Seleccione una opción'}
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, styles.saveButton]} onPress={handleSave}>
-          <Text style={styles.buttonText}>Guardar</Text>
-        </TouchableOpacity>
+
+        <Text style={styles.label}>Hora de Inicio</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Ej. 08:00"
+          value={horaInicio}
+          onChangeText={(input) => formatTimeInput(input, setHoraInicio)}
+          keyboardType="numeric"
+          maxLength={5}
+        />
+
+        <Text style={styles.label}>Hora de Fin</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Ej. 18:00"
+          value={horaFin}
+          onChangeText={(input) => formatTimeInput(input, setHoraFin)}
+          keyboardType="numeric"
+          maxLength={5} 
+        />
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={handleCancel}>
+            <Text style={styles.cancelButtonText}>Cancelar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.button, styles.saveButton]} onPress={handleSave}>
+            <Text style={styles.buttonText}>Guardar</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ImportancePickerModal
@@ -114,15 +151,17 @@ const AddHabitScreen = () => {
         onSelect={(value) => setImportance(value)}
         selectedValue={importance}
       />
-    </View>
+    </KeyboardAwareScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: '#f8f8f8',
+  },
+  innerContainer: {
+    padding: 20,
   },
   title: {
     fontSize: 24,
@@ -160,6 +199,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
   },
   button: {
     flex: 1,
@@ -169,7 +214,12 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   cancelButton: {
-    backgroundColor: '#d9534f',
+    backgroundColor: ColorPalette.light,
+  },
+  cancelButtonText: {
+    color: ColorPalette.dark,
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   saveButton: {
     backgroundColor: '#5cb85c',
