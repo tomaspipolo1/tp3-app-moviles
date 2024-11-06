@@ -6,9 +6,7 @@ import BottomLoginSheet from '../components/BottomLoginSheet'; // Importa el com
 const WelcomeScreen = () => {
   const { bottom } = useSafeAreaInsets();
 
-  const handleStartPress = () => {
-    // Aquí podrías manejar la lógica para desplegar `BottomLoginSheet`
-  };
+
 
   return (
     <View style={[styles.container, { paddingBottom: bottom }]}>

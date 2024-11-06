@@ -7,6 +7,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'fire
 import { router } from 'expo-router';
 import { useAddUser } from '@/hooks/useAddUser'
 import { useAuth } from '@/context/auth'
+import { ColorPalette } from '@/constants/Colors'
 
 const Page = () => {
   const { type } = useLocalSearchParams<{type: string}>();
@@ -185,8 +186,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   btnPrimary: {
-    backgroundColor: "#007bff",
+    backgroundColor: ColorPalette.btnPrimary,
     marginVertical: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
   },
   btnPrimaryText: {
     color: '#fff',

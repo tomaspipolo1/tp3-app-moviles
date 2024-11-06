@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   saveButton: {
-    backgroundColor: '#5cb85c',
+    backgroundColor: ColorPalette.btnPrimary,
   },
   buttonText: {
     color: '#fff',
