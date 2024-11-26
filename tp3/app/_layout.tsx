@@ -1,37 +1,70 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
-
+import { ThemeProvider } from '@react-navigation/native';
+import { DarkTheme, DefaultTheme } from '@react-navigation/native';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { TouchableOpacity, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { router, Stack, useNavigation } from 'expo-router';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+import Header from '@/components/Header';
+import { AuthProvider, useAuth } from '@/context/auth';
+import { useEffect } from 'react';
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+const StackLayout = () => {
+  const { isLoading, token } = useAuth()
+  const navigation = useNavigation<any>()
 
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
+    if (isLoading) return
 
-  if (!loaded) {
-    return null;
-  }
+    if (token) {
+      navigation.reset({index: 0, routes: [{name: '(tabs)'}]})
+    } else {
+      navigation.reset({index: 0, routes: [{name: 'index'}]})
+    }
+  }, [isLoading])
+
+  if (isLoading) return <View></View>
+
+  return (
+    <Stack>
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="login"
+        options={{
+          presentation: 'modal',
+          title: '',
+          headerTitleStyle: {
+            fontFamily: 'mon-sb',
+          },
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.back()}>
+              <Ionicons name="close-outline" size={28} />
+            </TouchableOpacity>
+          ),
+        }}
+      />
+
+      <Stack.Screen
+        name="(tabs)"
+      
+        options={{
+          headerShown: true,
+          header: () => <Header />,  
+        }}
+      />
+    </Stack>
+  )
+}
+
+export default function RootLayoutNav() {
+  const colorScheme = useColorScheme();
+
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
+      <AuthProvider>
+        <StackLayout></StackLayout>
+      </AuthProvider>
     </ThemeProvider>
   );
 }
