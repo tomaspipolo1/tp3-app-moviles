@@ -6,7 +6,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 export default function TabLayout() {
   // const colorScheme = useColorScheme();
-
   return (
     <Tabs
       screenOptions={{
@@ -33,7 +32,6 @@ export default function TabLayout() {
       />
       <Tabs.Screen
         name="(profile)"
-
         options={{ 
           headerShown: false,
           title: 'Perfil',
@@ -41,5 +39,6 @@ export default function TabLayout() {
         }}  
       />
     </Tabs>
+    
   );
 }

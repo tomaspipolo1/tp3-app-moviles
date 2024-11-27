@@ -1,11 +1,8 @@
 import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ActivityIndicator, Image, TextInput, TouchableOpacity, Alert } from 'react-native'
 import React, { useState } from 'react'
-import { useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, useNavigation } from 'expo-router'
 import { defaultStyles } from '../constants/Styles'
 import { FIREBASE_AUTH } from '../config/firebase-config'
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { router } from 'expo-router';
-import { useAddUser } from '@/hooks/useAddUser'
 import { useAuth } from '@/context/auth'
 import { ColorPalette } from '@/constants/Colors'
 
@@ -21,6 +18,7 @@ const Page = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const auth = FIREBASE_AUTH;
   const { signIn, signUp } = useAuth()
+  const navigation = useNavigation<any>()
 
 
   const validateInputs = () => {
@@ -63,7 +61,7 @@ const Page = () => {
     setLoading(true)
     try {
       await signIn({email, password})
-      // router.replace('/(tabs)/(list)')
+      navigation.reset({index: 0, routes: [{name: '(app)'}]})
     } catch (error: any) {
       console.log(error)
       let message = '';
@@ -91,7 +89,7 @@ const Page = () => {
     setLoading(true)
     try {
       await signUp({email, password, name, lastName, age})
-      router.replace('/(tabs)');
+      navigation.reset({index: 0, routes: [{name: '(app)'}]})
     } catch (error: any) {
       console.log(error);
       let message = '';

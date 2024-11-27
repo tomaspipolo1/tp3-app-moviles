@@ -1,5 +1,6 @@
 {
   "expo": {
+    "newArchEnabled": true,
     "name": "tp3",
     "slug": "tp3",
     "version": "1.0.0",

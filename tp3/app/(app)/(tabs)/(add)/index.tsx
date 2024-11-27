@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,17 +7,16 @@ import {
   Alert,
   StyleSheet,
 } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
 import { ColorPalette } from '@/constants/Colors';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import ImportancePickerModal from '@/components/Picker/ImportanceModalPicker';
 import { useAddHabit } from '@/hooks/useAddHabit';
 import { useAuth } from '@/context/auth';
-import { router } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useEditHabit } from '@/hooks/useEditHabit';
 
 const AddHabitScreen = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const { userData } = useAuth()
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -28,19 +27,30 @@ const AddHabitScreen = () => {
   const [isModalVisible, setModalVisible] = useState(false);
   const { addHabit } = useAddHabit(userData?.id!)
   const { editHabit } = useEditHabit(userData?.id!)
-  const { params }: any = useRoute()
+  const { habit } = useLocalSearchParams();
 
-  useEffect(() => {
-    if (params && params.habit) {
-      const {name, description, importance, timeFrom, timeTo, id} = JSON.parse(params.habit)
-      setName(name)
-      setHabitId(id)
-      setDescription(description)
-      setImportance(importance)
-      setTimeFrom(timeFrom)
-      setTimeTo(timeTo)
-    }
-  }, [params])
+  useFocusEffect(
+    useCallback(() => {
+      if (habit && habit !== 'undefined') {
+        const {name, description, importance, timeFrom, timeTo, id} = JSON.parse(habit as string)
+        setName(name)
+        setHabitId(id)
+        setDescription(description)
+        setImportance(importance)
+        setTimeFrom(timeFrom)
+        setTimeTo(timeTo)
+      }
+    }, [habit])
+  )
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        navigation.setParams({ habit: undefined })
+        clearForm()
+      }
+    }, [navigation])
+  )
 
   const handleSave = async () => {
     if (!name.trim() || !importance.trim()) {
@@ -68,7 +78,7 @@ const AddHabitScreen = () => {
     }
 
     clearForm()
-    router.push('/(list)');
+    router.push('/(app)/(tabs)/(list)');
   };
 
   const clearForm = () => {
@@ -82,7 +92,7 @@ const AddHabitScreen = () => {
 
   const handleCancel = () => {
     clearForm();
-    navigation.goBack();
+    router.push({pathname: '/(app)/(tabs)/(list)'});
   };
 
   const openModal = () => {
@@ -93,21 +103,21 @@ const AddHabitScreen = () => {
     setModalVisible(false);
   };
 
- // Función para formatear la hora en el formato "xx:xx"
- const formatTimeInput = (input, setter) => {
-  const formattedInput = input.replace(/[^0-9]/g, '');
+  const formatTimeInput = (input: string, setter: any) => {
+    const formattedInput = input.replace(/[^0-9]/g, '');
 
-  if (formattedInput === '') {
-    setter('');
-    return;
+    if (formattedInput === '') {
+      setter('');
+      return;
+    }
+
+    if (formattedInput.length <= 4) {
+      const hour = formattedInput.slice(0, 2);
+      const minutes = formattedInput.slice(2, 4);
+      setter(`${hour}:${minutes}`);
+    }
   }
 
-  if (formattedInput.length <= 4) {
-    const hour = formattedInput.slice(0, 2);
-    const minutes = formattedInput.slice(2, 4);
-    setter(`${hour}:${minutes}`);
-  }
-};
   return (
     <KeyboardAwareScrollView
       style={styles.container}
@@ -121,9 +131,8 @@ const AddHabitScreen = () => {
         <Text style={styles.label}>Nombre</Text>
         <TextInput
           style={styles.input}
-          placeholder="Nombre del hábito"
-          defaultValue={name}
           value={name}
+          placeholder="Nombre del hábito"
           onChangeText={setName}
         />
 
@@ -175,7 +184,7 @@ const AddHabitScreen = () => {
       <ImportancePickerModal
         visible={isModalVisible}
         onClose={closeModal}
-        onSelect={(value) => setImportance(value)}
+        onSelect={(value: string) => setImportance(value)}
         selectedValue={importance}
       />
     </KeyboardAwareScrollView>

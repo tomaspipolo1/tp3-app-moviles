@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useLayoutEffect, useCallback } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useCallback, useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import SkeletonItem from '@/components/SkeletonItem';
-import { router, useFocusEffect } from 'expo-router';
+import { router, useFocusEffect, useNavigation } from 'expo-router';
 import { Habit, useFetchHabits } from '@/hooks/useFetchHabits';
 import { useAuth } from '@/context/auth';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -15,7 +14,13 @@ const HabitListScreen = () => {
   const { fetchHabits } = useFetchHabits(userData?.id!)
   const { deleteHabit } = useDeleteHabit(userData?.id!)
   const [habits, setHabits] = useState<Habit[]>([])
-  const navigation = useNavigation<any>()
+
+  const filteredHabits = useMemo(() => {
+    if (selectedFilter === 'Todos') return habits
+
+    return habits.filter(e => e.importance === selectedFilter)
+  }, [selectedFilter, habits])
+
   useFocusEffect(
     useCallback(() => {
       const fetchData = async () => {
@@ -79,7 +84,7 @@ const HabitListScreen = () => {
       <Text style={styles.emptyStateSubText}>Carga tu primer hábito!</Text>
       <TouchableOpacity
         style={styles.addButton}
-        onPress={() => router.push('/(add)/')} 
+        onPress={() => router.push('/(app)/(tabs)/(add)')} 
       >
         <Text style={styles.addButtonText}>+</Text>
       </TouchableOpacity>
@@ -104,13 +109,13 @@ const HabitListScreen = () => {
       );
     }
 
-    if (habits.length === 0) {
+    if (filteredHabits.length === 0) {
       return renderEmptyState(); // Renderizar estado vacío si no hay hábitos
     }
 
     return (
       <FlatList
-        data={habits}
+        data={filteredHabits}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.habitItem}>
@@ -121,7 +126,7 @@ const HabitListScreen = () => {
             </View>
             <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center'}}>
               <Text>{item.importance}</Text>
-              <TouchableOpacity style={{ padding: 5}} onPress={() => router.push({pathname: '/(add)', params: {habit: JSON.stringify(item)}})}>
+              <TouchableOpacity style={{ padding: 5}} onPress={() => router.push({pathname: '/(app)/(tabs)/(add)', params: {habit: JSON.stringify(item)}})}>
                 <MaterialIcons name="edit" size={24} color="black" />
               </TouchableOpacity>
               <TouchableOpacity onPress={() => handleDelete(item.id)} style={{ padding: 5}}>
