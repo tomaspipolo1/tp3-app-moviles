@@ -6,16 +6,14 @@ import BottomLoginSheet from '../components/BottomLoginSheet'; // Importa el com
 const WelcomeScreen = () => {
   const { bottom } = useSafeAreaInsets();
 
-
-
   return (
     <View style={[styles.container, { paddingBottom: bottom }]}>
       <Text style={styles.welcomeText}>¡Bienvenido a tu nueva rutina!</Text>
       <Image
-          source={require('@/assets/images/bg-index2.png')}
-          style={styles.image}
-        />
-      <Text style= {styles.subTitle}>¡Construye la mejor versión de ti, comienza a cumplir tus metas!</Text>
+        source={require('@/assets/images/bg-index2.png')}
+        style={styles.image}
+      />
+      <Text style={styles.subTitle}>¡Construye la mejor versión de ti, comienza a cumplir tus metas!</Text>
       <BottomLoginSheet />
     </View>
   );

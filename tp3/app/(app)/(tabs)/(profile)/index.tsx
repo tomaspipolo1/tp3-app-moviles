@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useAuth } from '@/context/auth';
-import { router } from 'expo-router';  // Uso expo-router para la navegación
+import { router } from 'expo-router';
 import { ColorPalette } from '@/constants/Colors';
 
 const ProfileScreen = () => {
@@ -18,7 +18,6 @@ const ProfileScreen = () => {
         text: 'Cerrar sesión',
         onPress: async () => {
           await logOut();
-          router.push('/index');
         }
       },
     ]);
@@ -29,7 +28,7 @@ const ProfileScreen = () => {
       <View style={styles.profileContainer}>
         <MaterialIcons name="account-circle" size={200} color="#4CAF50" style={styles.userIcon} />
         <Text style={styles.nameText}>
-          {userData?.name} {userData?.lastName}
+          {userData?.name} {userData?.lastName} as
         </Text>
         {userData?.age && (
           <Text style={styles.ageText}>Edad: {userData.age}</Text>
@@ -38,7 +37,7 @@ const ProfileScreen = () => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={[styles.button, styles.viewHabitsButton]}
-          onPress={() => router.push('/(list)')} 
+          onPress={() => router.push('/(app)/(tabs)/(list)')} 
         >
           <Text style={styles.buttonText}>Ver hábitos</Text>
         </TouchableOpacity>
