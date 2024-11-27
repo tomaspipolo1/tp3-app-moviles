@@ -110,7 +110,7 @@ const HabitListScreen = () => {
     }
 
     if (filteredHabits.length === 0) {
-      return renderEmptyState(); // Renderizar estado vacío si no hay hábitos
+      return renderEmptyState(); 
     }
 
     return (
@@ -193,13 +193,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 10,
     marginBottom: 10,
+    marginHorizontal: 5,
     elevation: 2,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.05,
   },
   habitText: {
     fontSize: 16,
